@@ -1,0 +1,78 @@
+body {
+    background-color: #f5f5dc; /* Light tan */
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+    color: #333;
+}
+
+nav {
+    background-color: #4B0082; /* Deep purple */
+    padding: 1rem;
+    text-align: center;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.2rem;
+}
+
+.header {
+    text-align: center;
+    padding: 3rem 1rem;
+    background-color: #FFD700; /* Kobe gold */
+}
+
+.about, .image-section, .video-section, .tableau-section {
+    margin: 2rem auto;
+    width: 80%;
+    max-width: 800px;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+}
+
+h1, h2 {
+    text-align: center;
+}
+
+img {
+    display: block;
+    margin: 0 auto;
+    border-radius: 10px;
+}
+
+.back-to-top {
+    text-align: center;
+    margin: 2rem;
+}
+
+.back-to-top a {
+    color: #4B0082;
+    text-decoration: underline;
+    font-weight: bold;
+}
+.video-section {
+    text-align: center; /* Center everything inside */
+    padding: 20px; /* Add some breathing space */
+    background-color: white; /* White background for the box */
+    margin: 40px auto; /* Center the box itself */
+    width: 80%; /* Adjust width */
+    border-radius: 10px; /* Soft rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow for style */
+}
+
+.video-section iframe {
+    max-width: 100%; /* Make video responsive */
+    height: auto;
+}
+.tableau-section {
+    text-align: center;
+    padding: 20px;
+    background-color: white;
+    margin: 40px auto;
+    width: 80%;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}

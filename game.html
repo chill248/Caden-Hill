@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minesweeper</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            margin-top: 20px;
+        }
+        #game {
+            display: grid;
+            grid-template-columns: repeat(10, 30px);
+            justify-content: center;
+            margin: 20px auto;
+            gap: 2px;
+        }
+        .cell {
+            width: 30px;
+            height: 30px;
+            background-color: #ccc;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .cell.revealed {
+            background-color: #e0e0e0;
+            cursor: default;
+        }
+        .cell.flagged {
+            background-color: #ffdfba;
+        }
+        #restart {
+            display: none;
+            margin-top: 10px;
+            padding: 8px 16px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Minesweeper</h1>
+    <div id="game"></div>
+    <p id="status"></p>
+    <button id="restart">Restart Game</button>
+
+    <script>
+        const width = 10;
+        const height = 10;
+        const mineCount = 10;
+        const game = document.getElementById("game");
+        const status = document.getElementById("status");
+        const restartBtn = document.getElementById("restart");
+        let cells = [];
+        let gameOver = false;
+
+        function createBoard() {
+            game.innerHTML = "";
+            cells = [];
+            gameOver = false;
+            status.textContent = "";
+            restartBtn.style.display = "none";
+
+            const mines = Array(mineCount).fill("mine")
+                .concat(Array(width * height - mineCount).fill("safe"))
+                .sort(() => Math.random() - 0.5);
+
+            for (let i = 0; i < width * height; i++) {
+                const cell = document.createElement("button");
+                cell.classList.add("cell");
+                cell.setAttribute("data-id", i);
+                cell.setAttribute("data-type", mines[i]);
+                cell.addEventListener("click", () => revealCell(i));
+                cell.addEventListener("contextmenu", (e) => {
+                    e.preventDefault();
+                    toggleFlag(cell);
+                });
+                game.appendChild(cell);
+                cells.push(cell);
+            }
+
+            for (let i = 0; i < cells.length; i++) {
+                if (cells[i].getAttribute("data-type") === "mine") continue;
+                let total = 0;
+                const neighbors = getNeighbors(i);
+                neighbors.forEach(index => {
+                    if (cells[index].getAttribute("data-type") === "mine") total++;
+                });
+                cells[i].setAttribute("data-minecount", total);
+            }
+        }
+
+        function getNeighbors(index) {
+            const neighbors = [];
+            const isLeft = index % width === 0;
+            const isRight = index % width === width - 1;
+
+            if (index >= width) neighbors.push(index - width);
+            if (index < width * (height - 1)) neighbors.push(index + width);
+            if (!isLeft) {
+                neighbors.push(index - 1);
+                if (index >= width) neighbors.push(index - width - 1);
+                if (index < width * (height - 1)) neighbors.push(index + width - 1);
+            }
+            if (!isRight) {
+                neighbors.push(index + 1);
+                if (index >= width) neighbors.push(index - width + 1);
+                if (index < width * (height - 1)) neighbors.push(index + width + 1);
+            }
+            return neighbors;
+        }
+
+        function revealCell(index) {
+            const cell = cells[index];
+            if (gameOver || cell.classList.contains("revealed") || cell.classList.contains("flagged")) return;
+
+            cell.classList.add("revealed");
+            const type = cell.getAttribute("data-type");
+
+            if (type === "mine") {
+                cell.textContent = "💣";
+                endGame(false);
+            } else {
+                const count = cell.getAttribute("data-minecount");
+                if (count !== "0") {
+                    cell.textContent = count;
+                } else {
+                    getNeighbors(index).forEach(revealCell);
+                }
+                checkWin();
+            }
+        }
+
+        function toggleFlag(cell) {
+            if (gameOver || cell.classList.contains("revealed")) return;
+            cell.classList.toggle("flagged");
+            cell.textContent = cell.classList.contains("flagged") ? "🚩" : "";
+        }
+
+        function endGame(won) {
+            gameOver = true;
+            status.textContent = won ? "You Win!" : "Game Over!";
+            restartBtn.style.display = "inline-block";
+            cells.forEach(cell => {
+                if (cell.getAttribute("data-type") === "mine" && !cell.classList.contains("flagged")) {
+                    cell.textContent = "💣";
+                    cell.classList.add("revealed");
+                }
+                cell.disabled = true;
+            });
+        }
+
+        function checkWin() {
+            const safeCells = cells.filter(cell =>
+                cell.getAttribute("data-type") === "safe"
+            );
+            const revealedSafe = safeCells.filter(cell =>
+                cell.classList.contains("revealed")
+            );
+            if (revealedSafe.length === safeCells.length) {
+                endGame(true);
+            }
+        }
+
+        restartBtn.addEventListener("click", createBoard);
+        createBoard();
+    </script>
+</body>
+</html>
